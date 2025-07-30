@@ -72,6 +72,25 @@
                     </div>
                 </div>
 
+                <!-- 修改时间筛选 -->
+                <div class="relative" id="date-filter-container">
+                    <button class="appearance-none bg-white border rounded-lg py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 flex items-center">
+                        <i class="fas fa-calendar-alt mr-2"></i>时间筛选
+                        <i class="fas fa-chevron-down text-xs ml-2"></i>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border overflow-hidden z-10 hidden" id="date-filter-dropdown">
+                        <div class="p-3 border-b">
+                            <input type="date" class="w-full border rounded py-1 px-2 text-sm">
+                            <div class="text-center my-2 text-gray-400">至</div>
+                            <input type="date" class="w-full border rounded py-1 px-2 text-sm">
+                        </div>
+                        <div class="p-2 bg-gray-50 flex justify-end">
+                            <button class="px-3 py-1 text-sm bg-blue-500 text-white rounded mr-2" id="apply-date-filter">应用</button>
+                            <button class="px-3 py-1 text-sm bg-gray-200 rounded" id="reset-date-filter">重置</button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="flex border rounded-lg overflow-hidden">
                     <button class="bg-white hover:bg-gray-50 p-2 text-gray-700 border-r">
                         <i class="fas fa-th-list"></i>

@@ -11,7 +11,9 @@ class FileList {
     this.bindEvents();
     this.renderFiles();
     this.stateManager.on('files', () => this.renderFiles());
-  }
+    this.dateFilter = { start: null, end: null };
+    this.initDateFilter();
+}
 
   bindEvents() {
     // 文件点击事件委托
@@ -35,8 +37,67 @@ class FileList {
     });
   }
 
+  initDateFilter() {
+    const container = document.getElementById('date-filter-container');
+    const dropdown = document.getElementById('date-filter-dropdown');
+    const applyBtn = document.getElementById('apply-date-filter');
+    const resetBtn = document.getElementById('reset-date-filter');
+    const dateInputs = dropdown.querySelectorAll('input[type="date"]');
+
+    // 切换下拉菜单显示
+    container.querySelector('button').addEventListener('click', () => {
+      dropdown.classList.toggle('hidden');
+    });
+
+    // 点击外部关闭下拉菜单
+    document.addEventListener('click', (e) => {
+      if (!container.contains(e.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
+
+    // 应用筛选
+    applyBtn.addEventListener('click', () => {
+      this.dateFilter.start = dateInputs[0].value ? new Date(dateInputs[0].value) : null;
+      this.dateFilter.end = dateInputs[1].value ? new Date(dateInputs[1].value) : null;
+      dropdown.classList.add('hidden');
+      this.renderFiles();
+    });
+
+    // 重置筛选
+    resetBtn.addEventListener('click', () => {
+      dateInputs[0].value = '';
+      dateInputs[1].value = '';
+      this.dateFilter.start = null;
+      this.dateFilter.end = null;
+      dropdown.classList.add('hidden');
+      this.renderFiles();
+    });
+  }
+
+  filterFiles(files) {
+    if (!this.dateFilter.start && !this.dateFilter.end) return files;
+
+    return files.filter(file => {
+      const fileDate = new Date(file.modified);
+      const hasStart = this.dateFilter.start && fileDate >= this.dateFilter.start;
+      const hasEnd = this.dateFilter.end && fileDate <= this.dateFilter.end;
+
+      if (this.dateFilter.start && this.dateFilter.end) {
+        return hasStart && hasEnd;
+      } else if (this.dateFilter.start) {
+        return hasStart;
+      } else if (this.dateFilter.end) {
+        return hasEnd;
+      }
+      return true;
+    });
+  }
+
   renderFiles() {
-    const files = this.stateManager.getState().files;
+    let files = this.stateManager.getState().files;
+    // 应用日期筛选
+    files = this.filterFiles(files);
     this.container.innerHTML = '';
 
     if (files.length === 0) {
@@ -125,8 +186,17 @@ class FileList {
   }
 
   showNotification(message) {
-    // 实现通知逻辑
-    alert(message);
+    // 创建通知元素
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-20 right-4 bg-gray-800 text-white px-4 py-2 rounded shadow-lg z-50 animate-fadeIn';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    // 3秒后移除通知
+    setTimeout(() => {
+      notification.classList.add('animate-fadeOut');
+      setTimeout(() => notification.remove(), 300);
+    }, 3000);
   }
 
   getFileIcon(fileType) {
